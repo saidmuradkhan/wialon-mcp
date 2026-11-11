@@ -12,7 +12,7 @@ if (!WIALON_HOST || !WIALON_TOKEN) {
 
 const wialon = new Wialon({ host: WIALON_HOST, token: WIALON_TOKEN, timeZone: WIALON_TIMEZONE });
 const server = new McpServer(
-  { name: 'wialon-mcp', version: '1.0.0' },
+  { name: 'wialon-mcp', version: '1.0.1' },
   { instructions: `Read-only access to one Wialon GPS account: units (vehicles), groups, positions, tracks, events, sensors, geofences, drivers and the account's own report templates (mileage, trips, stops, fuel, engine hours and more). Times are ${WIALON_TIMEZONE}. For mileage, fuel, trips or stops prefer list_reports then run_report.` },
 );
 
