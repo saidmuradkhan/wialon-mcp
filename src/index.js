@@ -5,14 +5,14 @@ import { z } from 'zod';
 import { Wialon } from './wialon.js';
 
 const { WIALON_HOST, WIALON_TOKEN, WIALON_TIMEZONE = 'Asia/Baku' } = process.env;
-if (!WIALON_HOST || !WIALON_TOKEN) {
-  console.error('Set WIALON_HOST (e.g. https://go.gps.az) and WIALON_TOKEN');
+if (!WIALON_HOST) {
+  console.error('Set WIALON_HOST, e.g. https://go.gps.az');
   process.exit(1);
 }
 
 const wialon = new Wialon({ host: WIALON_HOST, token: WIALON_TOKEN, timeZone: WIALON_TIMEZONE });
 const server = new McpServer(
-  { name: 'wialon-mcp', version: '1.0.1' },
+  { name: 'wialon-mcp', version: '1.1.0' },
   { instructions: `Read-only access to one Wialon GPS account: units (vehicles), groups, positions, tracks, events, sensors, geofences, drivers and the account's own report templates (mileage, trips, stops, fuel, engine hours and more). Times are ${WIALON_TIMEZONE}. For mileage, fuel, trips or stops prefer list_reports then run_report.` },
 );
 

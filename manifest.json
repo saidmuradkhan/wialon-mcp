@@ -2,7 +2,7 @@
   "manifest_version": "0.3",
   "name": "wialon-mcp",
   "display_name": "Wialon GPS",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Read-only access to your Wialon GPS account: vehicles, positions, tracks, events, sensors, geofences, drivers and reports.",
   "author": {
     "name": "saidmuradkhan",
@@ -33,10 +33,11 @@
     },
     "token": {
       "type": "string",
-      "title": "Wialon token",
-      "description": "Access token of your Wialon account",
+      "title": "Wialon token (optional)",
+      "description": "Leave empty: on first use a browser window opens to sign in to Wialon",
       "sensitive": true,
-      "required": true
+      "required": false,
+      "default": ""
     },
     "timezone": {
       "type": "string",

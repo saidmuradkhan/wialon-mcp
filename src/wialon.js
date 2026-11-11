@@ -1,9 +1,55 @@
+import { createServer } from 'node:http';
+import { exec } from 'node:child_process';
+import { homedir } from 'node:os';
+import { join, dirname } from 'node:path';
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+
+const tokensFile = join(homedir(), '.wialon-mcp', 'tokens.json');
+
+function savedTokens() {
+  try {
+    return JSON.parse(readFileSync(tokensFile, 'utf8'));
+  } catch {
+    return {};
+  }
+}
+
 export class Wialon {
   constructor({ host, token, timeZone }) {
-    this.url = `${host.replace(/\/+$/, '')}/wialon/ajax.html`;
-    this.token = token;
+    this.host = host.replace(/\/+$/, '');
+    this.url = `${this.host}/wialon/ajax.html`;
+    this.configured = Boolean(token);
+    this.token = token || savedTokens()[this.host];
     this.timeZone = timeZone;
     this.sid = null;
+  }
+
+  save(token) {
+    this.token = token;
+    mkdirSync(dirname(tokensFile), { recursive: true });
+    writeFileSync(tokensFile, JSON.stringify({ ...savedTokens(), [this.host]: token }));
+  }
+
+  async signIn() {
+    if (!this.server) {
+      this.server = createServer((req, res) => {
+        const token = new URL(req.url, 'http://localhost').searchParams.get('access_token');
+        res.setHeader('content-type', 'text/html; charset=utf-8');
+        if (req.url.startsWith('/done')) {
+          if (token) {
+            this.save(token);
+            this.server.close();
+            this.server = null;
+          }
+          return res.end(token ? 'ok' : 'fail');
+        }
+        res.end(`<body style="font:18px sans-serif;text-align:center;padding:60px"><script>fetch('/done?'+(location.search.slice(1)||location.hash.slice(1))).then(r=>r.text()).then(t=>document.body.textContent=t==='ok'?'Wialon connected. Close this tab and return to Claude.':'Sign-in failed. Ask Claude again to retry.')</script>`);
+      });
+      await new Promise(resolve => this.server.listen(0, '127.0.0.1', resolve));
+    }
+    const link = `${this.host}/login.html?client_id=wialon-mcp&access_type=-1&activation_time=0&duration=0&flags=0x1&redirect_uri=${encodeURIComponent(`http://127.0.0.1:${this.server.address().port}/`)}`;
+    exec(process.platform === 'win32' ? `start "" "${link}"` : `${process.platform === 'darwin' ? 'open' : 'xdg-open'} "${link}"`);
+    throw new Error(`Wialon sign-in needed. A browser tab with the Wialon login page was opened: ask the user to sign in there and press Authorize, then retry. If no tab opened, give the user this link: ${link}`);
   }
 
   async call(svc, params = {}) {
@@ -26,7 +72,9 @@ export class Wialon {
 
   async login() {
     this.sid = null;
+    if (!this.token) return this.signIn();
     const data = await this.post('token/login', { token: this.token, fl: 1 });
+    if (!data.eid && !this.configured) return this.signIn();
     if (!data.eid) throw new Error(`Wialon login failed (error ${data.error}). Check host and token.`);
     this.sid = data.eid;
     const utc = Math.floor(Date.now() / 1000);

@@ -2,7 +2,7 @@
 
 Claude-a Wialon GPS hesabınızdakı məlumatları **yalnız oxumaq** üçün çıxış verir. Claude heç nəyi dəyişə, silə və ya maşınlara əmr göndərə bilməz.
 
-İstənilən Wialon serveri ilə işləyir: go.gps.az, hst-api.wialon.com və ya öz Wialon serveriniz.
+İstənilən Wialon serveri ilə işləyir: go.gps.az, gps.fms.az, hst-api.wialon.com və ya öz Wialon serveriniz.
 
 ## Claude nəyi görə bilər
 
@@ -20,37 +20,26 @@ Claude-a Wialon GPS hesabınızdakı məlumatları **yalnız oxumaq** üçün ç
 
 Yanacaq, yürüş və səfər rəqəmləri Wialon-dakı **hesabat şablonlarınızdan** gəlir. Şablonda olmayan məlumatı Claude da görməyəcək.
 
-## 1. Wialon token alın
-
-Token Claude-un hesabınıza girmək üçün istifadə etdiyi açardır.
-
-1. Brauzerdə bu ünvanı açın (başqa serverdirsə, `gps.fms.az` hissəsini dəyişin):
-   `https://gps.fms.az/login.html?client_id=wialon-mcp&access_type=-1&activation_time=0&duration=0&flags=0x1`
-2. Wialon istifadəçi adı və şifrənizlə daxil olun və icazə verin.
-3. Ünvan sətrində `access_token=` sözündən sonra gələn uzun kodu kopyalayın. Bu sizin token-inizdir.
-
-**Tövsiyə:** Wialon-da yalnız baxış hüququ olan ayrıca istifadəçi yaradın və token-i həmin istifadəçi ilə alın. Claude yalnız o istifadəçinin gördüyü maşınları görəcək.
-
-Token-i heç kimə göndərməyin. Onu Wialon-da istənilən vaxt ləğv edə bilərsiniz.
-
-## 2. Claude Desktop-a quraşdırın 
+## Quraşdırma (Claude Desktop, proqramçı lazım deyil)
 
 1. [Claude Desktop](https://claude.ai/download) proqramını quraşdırın və daxil olun.
-2. `wialon-mcp.mcpb` faylını iki dəfə klikləyin. Claude Desktop açılacaq və quraşdırmanı təklif edəcək.
-3. **Install** düyməsini basın və formanı doldurun:
-   - **Wialon server:** `https://gps.fms.az` (başqa serverdirsə, onun ünvanı)
-   - **Wialon token:** 1-ci addımda kopyaladığınız kod
-   - **Time zone:** `Asia/Baku`
-4. Bitdi. Claude-a yazın: *"Hazırda hərəkətdə olan maşınlar hansılardır?"*
+2. [wialon-mcp.mcpb](https://github.com/saidmuradkhan/wialon-mcp/releases/latest/download/wialon-mcp.mcpb) faylını yükləyin və iki dəfə klikləyin.
+3. **Install** düyməsini basın və formada Wialon saytınızın ünvanını yazın, məsələn `https://gps.fms.az`. Token xanasını boş saxlayın.
+4. Claude-a yazın: *"Hazırda hərəkətdə olan maşınlar hansılardır?"*
+5. İlk dəfə brauzerdə Wialon giriş səhifəsi açılacaq. İstifadəçi adı və şifrənizlə daxil olub **Authorize** basın, sonra sualı Claude-a təkrar verin.
 
-Bu yolla quraşdırma hər kompüterdə ayrıca edilir. Hər işçi öz token-ini istifadə edə bilər.
+Bitdi. Giriş yadda qalır, növbəti dəfələr brauzer açılmayacaq.
+
+**Tövsiyə:** Wialon-da yalnız baxış hüququ olan ayrıca istifadəçi yaradın və onunla daxil olun. Claude yalnız o istifadəçinin gördüyü maşınları görəcək.
 
 ## Claude Code ilə (proqramçılar üçün)
 
 ```bash
 npm install
-claude mcp add wialon -e WIALON_HOST=https://gps.fms.az -e WIALON_TOKEN=TOKEN -e WIALON_TIMEZONE=Asia/Baku -- node /yol/wialon-mcp/src/index.js
+claude mcp add wialon -e WIALON_HOST=https://gps.fms.az -e WIALON_TIMEZONE=Asia/Baku -- node /yol/wialon-mcp/src/index.js
 ```
+
+Hazır token-iniz varsa, `-e WIALON_TOKEN=...` əlavə edin, o zaman brauzerlə giriş olmayacaq.
 
 ## `.mcpb` faylını yenidən yığmaq
 
@@ -62,6 +51,7 @@ npx @anthropic-ai/mcpb pack . wialon-mcp.mcpb
 ## Təhlükəsizlik
 
 - Server yalnız oxuma sorğuları göndərir və Wialon-da heç nəyi dəyişmir.
-- Token yalnız sizin kompüterinizdə, Claude Desktop-un ayarlarında saxlanılır. Kodda və faylda heç bir token yoxdur.
+- Şifrəniz yalnız Wialon-un öz səhifəsinə yazılır, Claude onu görmür.
+- Girişdən sonra alınan token yalnız sizin kompüterinizdə, istifadəçi qovluğunuzdakı `.wialon-mcp/tokens.json` faylında saxlanılır. Çıxmaq üçün bu faylı silin və ya token-i Wialon-da ləğv edin.
 - Məlumat birbaşa sizin kompüterinizdən Wialon serverinə gedir. Arada üçüncü server yoxdur.
 - Claude-un gördüyü məlumat sizin Claude hesabınızdakı söhbətə düşür. Buna görə şirkətinizin Claude istifadə qaydalarına əməl edin.
