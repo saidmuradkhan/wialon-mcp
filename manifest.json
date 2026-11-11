@@ -1,0 +1,57 @@
+{
+  "manifest_version": "0.3",
+  "name": "wialon-mcp",
+  "display_name": "Wialon GPS",
+  "version": "1.0.0",
+  "description": "Read-only access to your Wialon GPS account: vehicles, positions, tracks, events, sensors, geofences, drivers and reports.",
+  "author": { "name": "Leops" },
+  "server": {
+    "type": "node",
+    "entry_point": "src/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/src/index.js"],
+      "env": {
+        "WIALON_HOST": "${user_config.host}",
+        "WIALON_TOKEN": "${user_config.token}",
+        "WIALON_TIMEZONE": "${user_config.timezone}"
+      }
+    }
+  },
+  "user_config": {
+    "host": {
+      "type": "string",
+      "title": "Wialon server",
+      "description": "Address of your Wialon site",
+      "default": "https://go.gps.az",
+      "required": true
+    },
+    "token": {
+      "type": "string",
+      "title": "Wialon token",
+      "description": "Access token of your Wialon account",
+      "sensitive": true,
+      "required": true
+    },
+    "timezone": {
+      "type": "string",
+      "title": "Time zone",
+      "description": "Time zone for dates and times",
+      "default": "Asia/Baku",
+      "required": true
+    }
+  },
+  "tools": [
+    { "name": "list_units", "description": "Live state of vehicles" },
+    { "name": "list_groups", "description": "Vehicle groups" },
+    { "name": "unit_track", "description": "GPS history and mileage of a vehicle" },
+    { "name": "unit_events", "description": "Harsh driving, speeding, geofence and other events" },
+    { "name": "unit_sensors", "description": "Current sensor values of a vehicle" },
+    { "name": "list_reports", "description": "Report templates of the account" },
+    { "name": "run_report", "description": "Run a report template" },
+    { "name": "list_geofences", "description": "Geofences" },
+    { "name": "list_drivers", "description": "Drivers" }
+  ],
+  "compatibility": { "runtimes": { "node": ">=18.0.0" } },
+  "license": "UNLICENSED"
+}

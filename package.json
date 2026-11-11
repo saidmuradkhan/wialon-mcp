@@ -1,0 +1,24 @@
+{
+  "name": "wialon-mcp",
+  "version": "1.0.0",
+  "description": "Read-only MCP server for any Wialon GPS account",
+  "main": "src/index.js",
+  "scripts": {
+    "pack": "mcpb pack . wialon-mcp.mcpb"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "type": "module",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "zod": "^4.6.7"
+  },
+  "bin": {
+    "wialon-mcp": "src/index.js"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  }
+}
